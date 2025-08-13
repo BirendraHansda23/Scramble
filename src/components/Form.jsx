@@ -9,6 +9,7 @@ export default function Form(){
     const [plainText,setPlainText] = useState("");
     const [cipher, setCipher] = useState({ text: "", key: null });
     const [method, setMethod] = useState({ methodName:"", reversible: null });
+    const [copied, setCopied] = useState(false);
 
     function handleSubmit(e){
         e.preventDefault();
@@ -34,6 +35,13 @@ export default function Form(){
         console.log(cipher);
     }
 
+    const handleCopy = () => {
+        navigator.clipboard.writeText(`${cipher.text} [key:${cipher.key}]`).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+        });
+    }
+
     return (
         <>
         <section className="flex justify-center">
@@ -42,6 +50,7 @@ export default function Form(){
 
                     <label htmlFor="method">Choose an encryption method </label>
                     <select
+                    className="bg-gray-100 py-1 rounded-md"
                     name="method"
                     id="method"
                     onChange={(e) => {
@@ -72,16 +81,20 @@ export default function Form(){
 
 
                     <button type="submit" 
-                    className=" rounded-md bg-gray-700 text-white p-3"
+                    className="rounded-md bg-blue-700 text-white p-3"
                     >Encrypt</button>
                 </form>
 
-                {cipher.text && <><div className="border-1 rounded-md min-w-[400px] min-h-[200px] p-2 my-2">
-                     <p>{cipher.key && cipher.key}{cipher.text}</p> 
-                    </div>
-                    <button type="submit" 
+                {cipher.text && <><textarea
+                    readOnly
+                    value={cipher.text}
+                    rows={6}
+                    className="w-full p-3 my-2 border rounded font-mono whitespace-pre-wrap break-all"
+                    />
+                    <button onClick={handleCopy}
                         className=" rounded-md bg-gray-900 text-white py-3 px-2"
                     >Copy to clip</button>
+                    {copied && <p className="text-md text-green-600 mt-1">Copied!</p>}
                     </>
                 }
                 
